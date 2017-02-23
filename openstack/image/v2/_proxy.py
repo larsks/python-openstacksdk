@@ -60,16 +60,30 @@ class Proxy(proxy2.BaseProxy):
 
         return img
 
-    def download_image(self, image):
+    def download_image(self, image, stream=False):
         """Download an image
+
+        This will download an image to memory (when stream=False) or allow
+        streaming downloads using an iterator (when stream=True). If using
+        stream=True, note that the corresponding connection will not
+        be released until the data is entirely read or you close the
+        response object.
 
         :param image: The value can be either the ID of an image or a
                       :class:`~openstack.image.v2.image.Image` instance.
 
-        :returns: The bytes comprising the given Image.
+        :param stream: When True, download_image will return a
+                       :class:`requests.models.Response` instance, from
+                       which you can request an iterator using
+                       the iter_content or iter_lines methods.
+
+        :returns: The bytes comprising the given Image when stream is
+                  False, otherwise a :class:`requests.models.Response`
+                  instance.
         """
+
         image = self._get_resource(_image.Image, image)
-        return image.download(self._session)
+        return image.download(self._session, stream=stream)
 
     def delete_image(self, image, ignore_missing=True):
         """Delete an image
