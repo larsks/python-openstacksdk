@@ -956,3 +956,27 @@ class Proxy(proxy.BaseProxy):
         """
         return self._list(_role_assignment.RoleAssignment,
                           paginated=False, **query)
+
+    def assign_role_to_user(self, project, user, role):
+        project = self._get_resource(_project.Project, project)
+        user = self._get_resource(_user.User, user)
+        role = self._get_resource(_role.Role, role)
+
+        return project.assign_role_to_user(
+            self._session, user, role)
+
+    def unassign_role_from_user(self, project, user, role):
+        project = self._get_resource(_project.Project, project)
+        user = self._get_resource(_user.User, user)
+        role = self._get_resource(_role.Role, role)
+
+        return project.unassign_role_from_user(
+            self._session, user, role)
+
+    def validate_user_has_role(self, project, user, role):
+        project = self._get_resource(_project.Project, project)
+        user = self._get_resource(_user.User, user)
+        role = self._get_resource(_role.Role, role)
+
+        return project.validate_user_has_role(
+            self._session, user, role)

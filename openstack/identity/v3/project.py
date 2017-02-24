@@ -10,6 +10,7 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from openstack import exceptions
 from openstack.identity import identity_service
 from openstack import resource2 as resource
 from openstack import utils
@@ -65,10 +66,14 @@ class Project(resource.Resource):
         """Validates that a user has a role on a project"""
         url = utils.urljoin(self.base_path, self.id, 'users',
                             user.id, 'roles', role.id)
-        resp = session.head(url, endpoint_filter=self.service)
-        if resp.status_code == 201:
-            return True
-        return False
+        try:
+            resp = session.head(url, endpoint_filter=self.service)
+        except exceptions.NotFoundException:
+            return False
+        else:
+            if resp.status_code in [201, 204]:
+                return True
+            return False
 
     def unassign_role_from_user(self, session, user, role):
         """Unassigns a role from a user on a project"""
